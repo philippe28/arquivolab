@@ -21,7 +21,10 @@ namespace Universidade
             Curso = "";
             Periodo = 0;
             Nome = "";
-            Endereço = "";
+            Rua = "";
+            Bairro = "";
+            Cidade = "";
+            Estado = "";
             Dia = 0;
             Mes = 0;
             Ano = 0;
@@ -35,7 +38,10 @@ namespace Universidade
             BW.Write(Curso);
             BW.Write(Periodo);
             BW.Write(Nome);
-            BW.Write(Endereço);
+            BW.Write(Rua);
+            BW.Write(Bairro);
+            BW.Write(Cidade);
+            BW.Write(Estado);
             BW.Write(Dia);
             BW.Write(Mes);
             BW.Write(Ano);
@@ -157,8 +163,12 @@ namespace Universidade
             Al.Periodo = short.Parse(Console.ReadLine());
             Console.Write("Nome......: ");
             Al.Nome = Console.ReadLine();
-            Console.Write("Endereço....: ");
-            Al.Endereço = Console.ReadLine();
+            Console.Write("Rua....: ");
+            Al.Rua = Console.ReadLine();
+            Console.Write("Bairro.....: ");
+            Al.Bairro = Console.ReadLine();
+            Console.Write("Estado...: R$ ");
+            Al.Estado = Console.Parse(Console.ReadLine());
             Console.Write("Dia.....: ");
             Al.Dia = short.Parse(Console.ReadLine());
             Console.Write("Mes.....: ");
