@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
@@ -12,7 +11,7 @@ namespace Universidade
         public short Matricula, Periodo, Dia, Mes;
         public int Ano;
         public long Telefone;
-        public string Nome, Curso, Endereço;
+        public string Nome, Curso, Endereço, Rua, Bairro, Cidade, Estado;
 
         public Aluno()
         {
@@ -55,7 +54,10 @@ namespace Universidade
             Curso = BR.ReadString();
             Periodo = BR.ReadInt16();
             Nome = BR.ReadString();
-            Endereço = BR.ReadString();
+            Rua = BR.ReadString();
+            Bairro = BR.ReadString();
+            Cidade = BR.ReadString();
+            Estado = BR.ReadString();
             Dia = BR.ReadInt16();
             Mes = BR.ReadInt16();
             Ano = BR.ReadInt32();
@@ -66,24 +68,16 @@ namespace Universidade
     class Program
     {
         static string NomeArq = "Aluno.dat";
-        static string NomeABP = "AlunoPesquisa.dat";
         static FileStream Arquivo;
         static BinaryWriter Escreve_Arquivo;
         static BinaryReader Ler_Arquivo;
-        // ABP
-        static FileStream ArquivoABP;
-        static BinaryWriter WriteAlunoABP;
-        static BinaryReader ReadAlunoABP;
-
+       
         static void Inicializar()
         {
             Arquivo = new FileStream(NomeArq, FileMode.OpenOrCreate, FileAccess.ReadWrite);            
             Escreve_Arquivo = new BinaryWriter(Arquivo);
             Ler_Arquivo = new BinaryReader(Arquivo);
 
-            ArquivoABP = new FileStream(NomeABP, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            WriteAlunoABP = new BinaryWriter(ArquivoABP);
-            ReadAlunoABP = new BinaryReader(ArquivoABP);
         }
 
         static void Finalizar()
@@ -141,10 +135,14 @@ namespace Universidade
                         Relatório_Curso_SI();
                         break;
                     case 8:
+					opcao=8;
                         break;
                     default:
                         Console.WriteLine("Opção inválida.");
                         break;
+
+
+
                 }
             } while (opcao >= 1 && opcao <= 7);
             Console.ReadKey();
@@ -167,8 +165,8 @@ namespace Universidade
             Al.Rua = Console.ReadLine();
             Console.Write("Bairro.....: ");
             Al.Bairro = Console.ReadLine();
-            Console.Write("Estado...: R$ ");
-            Al.Estado = Console.Parse(Console.ReadLine());
+            Console.Write("Estado...: ");
+            Al.Estado = Console.ReadLine();
             Console.Write("Dia.....: ");
             Al.Dia = short.Parse(Console.ReadLine());
             Console.Write("Mes.....: ");
@@ -178,9 +176,47 @@ namespace Universidade
             Console.Write("Telefone...: ");
             Al.Telefone = long.Parse(Console.ReadLine());
             Al.Salvar(Escreve_Arquivo);
+
         }
         static void Excluir_Aluno()
         {
+
+			 BinaryWriter temp = new BinaryWriter(new FileStream("temp.dat", FileMode.Create, FileAccess.Write));
+
+            Console.Clear();
+			Console.WriteLine("EXCLUSÃO DE ALUNOS (POR MATRÍCULA)");
+            Console.WriteLine("========================================\n");
+            Arquivo.Seek(0, SeekOrigin.Begin);
+            short Matricula;
+            bool achou = false;
+            Aluno Al = new Aluno();
+            Console.Write("Matrícula : ");
+            Matricula = short.Parse(Console.ReadLine());
+            while (Ler_Arquivo.PeekChar() >= 0)
+            {
+                Al.Ler(Ler_Arquivo);
+                if (Al.Matricula != Matricula)
+                    Al.Salvar(temp);
+                else
+                    achou = true;
+            }
+            temp.Close();
+            if (achou)
+            {
+                Finalizar();
+                File.Delete(NomeArq);
+                File.Move("temp.dat", NomeArq);
+                Console.WriteLine("Aluno excluído com sucesso.\n");
+                Inicializar();
+            }
+            else
+            {
+                File.Delete("temp.dat");
+                Console.WriteLine("Aluno não localizado.\n");
+            }
+            Console.WriteLine("Pressione qualquer tecla...");
+            Console.ReadKey();
+        
 
         }
         static void Consultar_Aluno_Nome()
@@ -207,8 +243,8 @@ namespace Universidade
         {
             SortedDictionary<short, long> dicMatricula = new SortedDictionary<short, long>();
             SortedDictionary<string, long> dicNome = new SortedDictionary<string, long>();
-            BinaryWriter idxMat = new BinaryWriter(new FileStream("FuncMat.idx", FileMode.Create, FileAccess.Write));
-            BinaryWriter idxNome = new BinaryWriter(new FileStream("FuncNome.idx", FileMode.Create, FileAccess.Write));
+            BinaryWriter idxMat = new BinaryWriter(new FileStream("AlMat.idx", FileMode.Create, FileAccess.Write));
+            BinaryWriter idxNome = new BinaryWriter(new FileStream("AlNome.idx", FileMode.Create, FileAccess.Write));
             Arquivo.Seek(0, SeekOrigin.Begin);
             Aluno Al = new Aluno();
             long ultimaPos = 0;
