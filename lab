@@ -32,7 +32,7 @@ namespace Universidade
 
         public void Salvar(BinaryWriter BW)
         {
-            BW.Write(Status);
+            
             BW.Write(Matricula);
             BW.Write(Curso);
             BW.Write(Periodo);
@@ -49,7 +49,7 @@ namespace Universidade
 
         public void Ler(BinaryReader BR)
         {
-            Status = BR.ReadChar();
+            
             Matricula = BR.ReadInt16();
             Curso = BR.ReadString();
             Periodo = BR.ReadInt16();
@@ -97,6 +97,7 @@ namespace Universidade
             byte opcao;
             do
             {
+                
                 Console.Clear();
                 Console.WriteLine("CADASTRO DE ALUNOS");
                 Console.WriteLine("========================\n");
@@ -107,7 +108,8 @@ namespace Universidade
                 Console.WriteLine("5 - Relatório de alunos da universidade");
                 Console.WriteLine("6 - Relatório de alunos por curso");
                 Console.WriteLine("7 - Relatório de alunos por curso de SI");
-                Console.WriteLine("8 - Sair\n");
+                Console.WriteLine("8 - Gerar Indíce");
+                Console.WriteLine("9 - Sair\n");
                 Console.Write("Digite sua opção : ");
                 opcao = byte.Parse(Console.ReadLine());
 
@@ -224,11 +226,12 @@ namespace Universidade
         {
 			string nome, confere_nome;
             long posicao;
+			bool axou = false;
             BinaryReader consulta = new BinaryReader(new FileStream("AlNome.idx", FileMode.Open, FileAccess.Read));
             Aluno Al = new Aluno();
             Console.Write("INFORME O NOME DO ALUNO: ");
             nome = Console.ReadLine();
-            while (consulta.PeekChar() >= 0)
+            while (consulta.PeekChar() >= 0 || axou == false)
             {
                 confere_nome = consulta.ReadString();
                 posicao = consulta.ReadInt64();
@@ -241,6 +244,7 @@ namespace Universidade
                     Console.Write("Bairro...: {0}\nEstado....: {1}", Al.Bairro, Al.Estado);
                     Console.Write("Data_Nasc: {0}-{1}-{2}", Al.Dia, Al.Mes, Al.Ano);
                     Console.Write("\nTelefone.: {0}\n", Al.Telefone);
+					axou =true;
                 }
                 
                 
@@ -248,51 +252,35 @@ namespace Universidade
             Console.ReadKey();
 
         }
-        static void Consultar_Aluno_Matricula()
-        {
-            BinaryReader ConsultaMatricula = new BinaryReader(new FileStream("AlMat.idx", FileMode.Open, FileAccess.Read));
-			Console.Write("INFORME A MATRICULA :  ");
-			short Matricula;
+        static void Consultar_Aluno_Matricula ()
+		{
+			BinaryReader ConsultaMatricula = new BinaryReader (new FileStream ("AlMat.idx", FileMode.Open, FileAccess.Read));
+			Console.Write ("INFORME A MATRICULA :  ");
+			short Matricula, Conferi_Matricula;
 			long posicao;
-			Aluno Al = new Aluno();
+			bool axou = false;
+			Aluno Al = new Aluno ();
+			Matricula = Int16.Parse (Console.ReadLine ());
+			while (ConsultaMatricula.PeekChar() >=0 || axou == false)
+			{
+				Conferi_Matricula = ConsultaMatricula.ReadInt16 ();
+				posicao = ConsultaMatricula.ReadInt64 ();
+				if (Conferi_Matricula == Matricula) {
+					Al.Ler (Ler_Arquivo);
+					Console.WriteLine ("Curso.....: " + Al.Curso);
+					Console.WriteLine ("Período...: " + Al.Periodo);
+					Console.WriteLine ("Nome......: " + Al.Nome);
+					Console.WriteLine ("Rua....: " + Al.Rua);
+					Console.WriteLine ("Bairro.....: " + Al.Bairro);
+					Console.WriteLine ("Estado...: " + Al.Estado);
+					Console.WriteLine ("Data de nascimeto.....: " + Al.Dia + "/" + Al.Mes + "/" + Al.Ano);
+		            Console.Write ("Telefone...: " + Al.Telefone);
 
-			Matricula = Int16.Parse(Console.ReadLine());
-
-
-				while (ConsultaMatricula.PeekChar() >=0)
-				{						
-
-					if (Matricula == ConsultaMatricula.ReadInt16())
-					{
-					posicao = ConsultaMatricula.ReadInt64();
-					Arquivo.Seek(posicao,SeekOrigin.Begin);	
-					Al.Ler(Ler_Arquivo);
-
-
-					Al.Matricula = short.Parse(Console.ReadLine());
-		            Console.Write("Curso.....: "+Al.Curso);
-		            Console.Write("Período...: "+Al.Periodo);
-		            Console.Write("Nome......: "+Al.Nome);
-		            Console.Write("Rua....: "+Al.Rua);
-		            Console.Write("Bairro.....: "+Al.Bairro);
-		            Console.Write("Estado...: "+Al.Estado);
-		            Console.Write("Data de nascimeto.....: "+Al.Dia+"/"+Al.Mes+"/"+Al.Ano);
-		            
-		            Console.Write("Telefone...: "+Al.Telefone);
-
-
-
-
-
-					}
-					else
-						posicao = ConsultaMatricula.ReadInt64();
-
+					axou = true;
 				}
+			}
 
-
-
-
+			Console.ReadKey();
         }
         static void Relatório_Universidade()
         {
