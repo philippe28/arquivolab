@@ -11,11 +11,11 @@ namespace Universidade
         public short Matricula, Periodo, Dia, Mes;
         public int Ano;
         public long Telefone;
-        public string Nome, Curso, Rua, Bairro, Cidade, Estado;
+        public string Nome, Curso, Rua, Bairro, Cidade, Estado,Universidade;
 
         public Aluno()
         {
-            Status = ' ';
+			Universidade="";
             Matricula = 0;
             Curso = "";
             Periodo = 0;
@@ -32,7 +32,7 @@ namespace Universidade
 
         public void Salvar(BinaryWriter BW)
         {
-            
+			BW.Write(Universidade);
             BW.Write(Matricula);
             BW.Write(Curso);
             BW.Write(Periodo);
@@ -49,7 +49,7 @@ namespace Universidade
 
         public void Ler(BinaryReader BR)
         {
-            
+			Universidade =BR.ReadString();
             Matricula = BR.ReadInt16();
             Curso = BR.ReadString();
             Periodo = BR.ReadInt16();
@@ -156,6 +156,8 @@ namespace Universidade
             Aluno Al = new Aluno();
 
             Console.Clear();
+			Console.Write("Universidade.....: ");
+            Al.Universidade = Console.ReadLine();
             Console.Write("Matrícula.: ");
             Al.Matricula = short.Parse(Console.ReadLine());
             Console.Write("Curso.....: ");
@@ -284,14 +286,114 @@ namespace Universidade
         }
         static void Relatório_Universidade()
         {
+			Arquivo.Seek(0, SeekOrigin.Begin);
+            int cont = 0, Pag=1;
+            Console.Clear();
+            Console.WriteLine("LISTAGEM DE ALUNO (PÁGINA "+Pag+")");
+            Console.WriteLine("===================================\n");
+            string Universidade, Conferi_Universidade;
+			long posicao;
+			Aluno Al = new Aluno ();
+			Universidade =Console.ReadLine ();
+			while (Ler_Arquivo.PeekChar()>=0)
+            {
+
+                Al.Ler (Ler_Arquivo);
+				Universidade = Convert.ToString(Al.Universidade);//nao to consiguindo ordenar o arquivo
+				SortedList<Aluno,List<Aluno>> ordena =new SortedList<Aluno, List<Aluno>>();//ordenar e escrever o relatorio
+							ordena.Add (Al.Universidade,
+					
+					Console.WriteLine ("Período...: " + Al.Periodo);
+					Console.WriteLine ("Nome......: " + Al.Nome);
+					Console.WriteLine ("Rua....: " + Al.Rua);
+					Console.WriteLine ("Bairro.....: " + Al.Bairro);
+					Console.WriteLine ("Estado...: " + Al.Estado);
+					Console.WriteLine ("Data de nascimeto.....: " + Al.Dia + "/" + Al.Mes + "/" + Al.Ano);
+		            Console.WriteLine ("Telefone...: " + Al.Telefone);
+				if (Al.Universidade == Universidade) {
+
+					Console.WriteLine ("Curso.....: " + Al.Curso);
+					Console.WriteLine ("Período...: " + Al.Periodo);
+					Console.WriteLine ("Nome......: " + Al.Nome);
+					Console.WriteLine ("Rua....: " + Al.Rua);
+					Console.WriteLine ("Bairro.....: " + Al.Bairro);
+					Console.WriteLine ("Estado...: " + Al.Estado);
+					Console.WriteLine ("Data de nascimeto.....: " + Al.Dia + "/" + Al.Mes + "/" + Al.Ano);
+		            Console.WriteLine ("Telefone...: " + Al.Telefone);
+								    
+
+				cont++;
+		}
+                    if (cont == 6)
+                    {
+                        Pag++;
+                        cont = 0;
+                        Console.WriteLine("Pressione qualquer tecla...");
+                        Console.ReadKey();
+                        Console.Clear();
+                        Console.WriteLine("LISTAGEM DE ALUNO (PÁGINA " + Pag + ")");
+                        Console.WriteLine("===================================\n");
+                    }
+                
+            }
+            Console.WriteLine("Pressione qualquer tecla...");
+            Console.ReadKey();
+
 
         }
         static void Relatório_Curso()
         {
 
+
+
         }
         static void Relatório_Curso_SI()
-        {
+		{
+			Arquivo.Seek(0, SeekOrigin.Begin);
+
+			int cont = 0, Pag=1;
+            Console.Clear();
+            Console.WriteLine("LISTAGEM DE ALUNO (PÁGINA "+Pag+")");
+            Console.WriteLine("===================================\n");
+            string Universidade, Conferi_Universidade;
+			long posicao;
+			Aluno Al = new Aluno ();
+			Universidade =Console.ReadLine ();
+			while (Ler_Arquivo.PeekChar()>=0)
+            {
+
+                Al.Ler (Ler_Arquivo);
+				if (Al.Universidade == Universidade) {
+
+					Console.WriteLine ("Curso.....: " + Al.Curso);
+					Console.WriteLine ("Período...: " + Al.Periodo);
+					Console.WriteLine ("Nome......: " + Al.Nome);
+					Console.WriteLine ("Rua....: " + Al.Rua);
+					Console.WriteLine ("Bairro.....: " + Al.Bairro);
+					Console.WriteLine ("Estado...: " + Al.Estado);
+					Console.WriteLine ("Data de nascimeto.....: " + Al.Dia + "/" + Al.Mes + "/" + Al.Ano);
+		            Console.Write ("Telefone...: " + Al.Telefone);
+										    
+
+				cont++;
+				}
+                    if (cont == 6)
+                    {
+                        Pag++;
+                        cont = 0;
+                        Console.WriteLine("Pressione qualquer tecla...");
+                        Console.ReadKey();
+                        Console.Clear();
+                        Console.WriteLine("LISTAGEM DE ALUNO (PÁGINA " + Pag + ")");
+                        Console.WriteLine("===================================\n");
+                    }
+                
+            }
+            Console.WriteLine("Pressione qualquer tecla...");
+            Console.ReadKey();
+
+
+        
 
 
 
@@ -300,8 +402,11 @@ namespace Universidade
         {
             SortedDictionary<short, long> dicMatricula = new SortedDictionary<short, long>();
             SortedDictionary<string, long> dicNome = new SortedDictionary<string, long>();
+            SortedDictionary<string, long> dicUni = new SortedDictionary<string, long>();
+			
             BinaryWriter idxMat = new BinaryWriter(new FileStream("AlMat.idx", FileMode.Create, FileAccess.Write));
             BinaryWriter idxNome = new BinaryWriter(new FileStream("AlNome.idx", FileMode.Create, FileAccess.Write));
+            BinaryWriter idxUni = new BinaryWriter(new FileStream("AlUni.idx", FileMode.Create, FileAccess.Write));
             Arquivo.Seek(0, SeekOrigin.Begin);
             Aluno Al = new Aluno();
             long ultimaPos = 0;
@@ -325,6 +430,14 @@ namespace Universidade
             foreach (KeyValuePair<string, long> kvp in dicNome)
             {
                 idxNome.Write(kvp.Key);
+                idxNome.Write(kvp.Value);
+            }
+
+
+			foreach (KeyValuePair<string, long> kvp in dicUni)
+            {
+
+                idxUni.Write(kvp.Key);
                 idxNome.Write(kvp.Value);
             }
             idxMat.Close();
